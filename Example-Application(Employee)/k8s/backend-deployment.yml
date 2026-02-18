@@ -13,9 +13,9 @@ metadata:
   name: be-secret
 type: Opaque
 data:
-  DB_HOST: avinash.cmdigqa4cp2m.us-east-1.rds.amazonaws.com
-  DB_USER: admin
-  DB_PASSWORD: admin123
+  DB_HOST: YXZpbmFzaC5jbWRpZ3FhNGNwMm0udXMtZWFzdC0xLnJkcy5hbWF6b25hd3MuY29tCg==
+  DB_USER: YWRtaW4K
+  DB_PASSWORD: YWRtaW4xMjMK
 
 ---
 apiVersion: apps/v1
@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       - name: cont-1
-        image: avinashg0/employee:be
+        image: avinashg0/employee:be-3
         ports:
         - containerPort: 3000
         resources:
