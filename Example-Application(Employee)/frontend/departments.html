@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Departments - Employee Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>EMS</h2>
+            <ul>
+                <li><a href="dashboard.html">📊 Dashboard</a></li>
+                <li><a href="employees.html">👥 Employees</a></li>
+                <li><a href="departments.html" class="active">🏢 Departments</a></li>
+                <li><a href="#" onclick="logout()">🚪 Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header>
+                <h1>Department Management</h1>
+                <button class="btn btn-primary" onclick="openAddDepartmentModal()">➕ Add Department</button>
+            </header>
+
+            <!-- Departments Grid -->
+            <div class="departments-grid" id="departmentsGrid">
+                Loading...
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Department Modal -->
+    <div id="departmentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDepartmentModal()">&times;</span>
+            <h2 id="deptModalTitle">Add Department</h2>
+            <form id="departmentForm">
+                <input type="hidden" id="departmentId">
+                <div class="form-group">
+                    <label>Department Name:</label>
+                    <input type="text" id="deptName" required>
+                </div>
+                <div class="form-group">
+                    <label>Location:</label>
+                    <input type="text" id="deptLocation" required>
+                </div>
+                <div class="form-group">
+                    <label>Budget:</label>
+                    <input type="number" id="deptBudget" required>
+                </div>
+                <button type="submit" class="btn btn-success">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

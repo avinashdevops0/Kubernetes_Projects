@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: fe-deploy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: employee-fe
+  template:
+    metadata:
+      labels:
+        app: employee-fe
+    spec:
+      containers:
+        - name: cont-1
+          image: avinashg0/employee:fe
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 50m
+              memory: 50Mi
+            limits:
+              cpu: 100m
+              memory: 100Mi
+
+---
+apiVersion: v1 
+kind: Service 
+metadata:
+  name: fe-service
+spec:
+  type: ClusterIP
+  selector:
+    app: employee-fe
+  ports:
+    - port: 80
+      targetport: 80

@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: be-configmap
+data:
+  DB_NAME: employee_management
+  PORT: "3000"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: be-secret
+type: Opaque
+data:
+  DB_HOST: avinash.cmdigqa4cp2m.us-east-1.rds.amazonaws.com
+  DB_USER: admin
+  DB_PASSWORD: admin123
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: be-deploy
+spec:
+  selector:
+    matchLabels:
+      app: employee-be
+  template:
+    metadata:
+      labels:
+        app: employee-be
+    spec:
+      containers:
+      - name: cont-1
+        image: avinashg0/employee:be
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: 50m 
+            memory: 50Mi 
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        envFrom:
+          - configMapRef:
+              name: be-configmap
+          - secretRef:
+              name: be-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: be-service
+spec:
+  type: ClusterIP
+  selector:
+    app: employee-be
+  ports:
+  - port: 80
+    targetPort: 3000
+
+
+
+

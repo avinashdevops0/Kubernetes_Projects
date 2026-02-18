@@ -1,0 +1,197 @@
+version: "3.8"
+
+services:
+  backend:
+    build: ./backend
+    image: avinashg0/employee:be
+
+  frontend:
+    build: ./frontend
+    image: avinashg0/employee:fe
+
+
+# ✅ CASE 1 — If You Are Using EKS (Recommended Way)
+
+# If your cluster is Amazon EKS, you should NOT create imagePullSecrets manually.
+
+# ✔ Best Practice: Use IAM Role
+
+# Attach this policy to your node group IAM role:
+
+# AmazonEC2ContainerRegistryReadOnly
+
+
+# That’s it.
+
+# EKS nodes will automatically authenticate to ECR.
+
+# No secrets.
+# No tokens.
+# No expiration issues.
+
+# ✅ CASE 2 — If Kubernetes Is NOT in AWS (Minikube / On-Prem / Other Cloud)
+
+# Then you must manually create a Docker registry secret.
+
+# 🔹 Step 1 — Get ECR Login Password
+# aws ecr get-login-password --region us-east-1
+
+# 🔹 Step 2 — Create Kubernetes Secret
+# kubectl create secret docker-registry ecr-secret \
+#   --docker-server=123456789012.dkr.ecr.us-east-1.amazonaws.com \
+#   --docker-username=AWS \
+#   --docker-password=$(aws ecr get-login-password --region us-east-1)
+
+
+# Replace:
+
+# 123456789012 → your AWS account ID
+
+# us-east-1 → your region
+
+# 🔹 Step 3 — Use It in Deployment
+# spec:
+#   template:
+#     spec:
+#       containers:
+#         - name: backend
+#           image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/employee:be
+#       imagePullSecrets:
+#         - name: ecr-secret
+
+# ⚠️ Important: Token Expiry
+
+# ECR login tokens expire every 12 hours.
+
+# So if you're not using EKS IAM roles:
+
+# You must recreate the secret
+
+# Or automate it
+
+# Or use IAM roles for service accounts (IRSA)
+
+# 🚀 Best Practice Summary
+# Cluster Type	Recommended Method
+# EKS	IAM Role (No secret) ✅
+# Minikube	docker-registry secret
+# Other Cloud	docker-registry secret
+# 🔍 If You’re Getting ImagePullBackOff
+
+# Run:
+
+# kubectl describe pod <pod-name>
+
+
+# Look for:
+
+# no basic auth credentials
+
+# denied: requested access
+
+# not found
+
+
+
+
+
+
+
+# 1️⃣ Create a ConfigMap from your SQL file
+# kubectl create configmap mysql-initdb \
+#   --from-file=data.sql
+
+
+# Check:
+
+# kubectl get configmap mysql-initdb -o yaml
+
+# 2️⃣ Create a PersistentVolumeClaim for MySQL data
+
+# This ensures data persists across pod restarts.
+
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: mysql-pvc
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 1Gi
+
+# 3️⃣ MySQL Deployment
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: mysql
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: mysql
+#   template:
+#     metadata:
+#       labels:
+#         app: mysql
+#     spec:
+#       containers:
+#         - name: mysql
+#           image: mysql:8
+#           env:
+#             - name: MYSQL_ROOT_PASSWORD
+#               value: "root"
+#             - name: MYSQL_DATABASE
+#               value: "employee"
+#           ports:
+#             - containerPort: 3306
+#           volumeMounts:
+#             # MySQL data persistence
+#             - name: mysql-data
+#               mountPath: /var/lib/mysql
+#             # SQL init script
+#             - name: mysql-initdb
+#               mountPath: /docker-entrypoint-initdb.d
+#       volumes:
+#         - name: mysql-data
+#           persistentVolumeClaim:
+#             claimName: mysql-pvc
+#         - name: mysql-initdb
+#           configMap:
+#             name: mysql-initdb
+
+# 4️⃣ MySQL Service
+
+# Expose MySQL inside the cluster:
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: mysql
+# spec:
+#   selector:
+#     app: mysql
+#   ports:
+#     - protocol: TCP
+#       port: 3306
+#       targetPort: 3306
+
+# ✅ How It Works
+
+# ConfigMap mounts data.sql to /docker-entrypoint-initdb.d/data.sql
+
+# MySQL container runs only on first initialization
+
+# PersistentVolume ensures data persists across restarts
+
+# Service allows other pods (backend) to connect via hostname mysql:3306
+
+# ⚠️ Important Notes
+
+# The SQL script only runs if the database folder is empty.
+# If you redeploy, MySQL ignores the script.
+
+# You can add multiple SQL scripts to the ConfigMap or mount a directory.
+
+# If using large SQL files (>1MB), consider using a PersistentVolume with the SQL file preloaded, because ConfigMaps have size limits (~1MB).

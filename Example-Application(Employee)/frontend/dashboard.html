@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Employee Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>EMS</h2>
+            <ul>
+                <li><a href="dashboard.html" class="active">📊 Dashboard</a></li>
+                <li><a href="employees.html">👥 Employees</a></li>
+                <li><a href="departments.html">🏢 Departments</a></li>
+                <li><a href="#" onclick="logout()">🚪 Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header>
+                <h1>Dashboard</h1>
+                <div class="user-info">
+                    <span id="loggedInUser">Admin</span>
+                </div>
+            </header>
+
+            <!-- Stats Cards -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>Total Employees</h3>
+                    <p id="totalEmployees">-</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Departments</h3>
+                    <p id="totalDepartments">-</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Employees</h3>
+                    <p id="activeEmployees">-</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg Salary</h3>
+                    <p id="avgSalary">-</p>
+                </div>
+            </div>
+
+            <!-- Recent Employees -->
+            <div class="recent-section">
+                <h2>Recent Employees</h2>
+                <table id="recentEmployees">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Department</th>
+                            <th>Join Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentEmployeesBody">
+                        <tr><td colspan="4">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
