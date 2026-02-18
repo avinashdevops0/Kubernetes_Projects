@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: cont-1
-          image: avinashg0/employee:fe
+          image: avinashg0/employee:fe-8
           ports:
             - containerPort: 80
           resources:
@@ -36,4 +36,4 @@ spec:
     app: employee-fe
   ports:
     - port: 80
-      targetport: 80
+      targetPort: 80

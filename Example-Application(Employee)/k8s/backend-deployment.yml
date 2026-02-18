@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       - name: cont-1
-        image: avinashg0/employee:be-3
+        image: avinashg0/employee:be-8
         ports:
         - containerPort: 3000
         resources:
