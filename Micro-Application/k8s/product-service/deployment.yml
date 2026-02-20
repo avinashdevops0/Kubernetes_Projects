@@ -18,9 +18,9 @@ metadata:
     app: shopping
 type: Opaque
 data:
-  USER_DB_HOST: bXlzcWwtdXNlcg==          # mysql-user
-  USER_DB_USER: dXNlcl9zZXJ2aWNl          # user_service
-  USER_DB_PASSWORD: dXNlcnBhc3MxMjM=      # userpass123
+  USER_DB_HOST: YXZpbmFzaC5jbWRpZ3FhNGNwMm0udXMtZWFzdC0xLnJkcy5hbWF6b25hd3MuY29tCg==
+  USER_DB_USER: YWRtaW4K
+  USER_DB_PASSWORD: YWRtaW4xMjMK
 
 ---
 apiVersion: apps/v1
