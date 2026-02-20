@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  api-gateway:
+    build: ./api-gateway
+    image: api-gateway
+    env_file:
+      - ./.env
+    depends_on:
+      - user-service
+      - product-service
+      - order-service
+    networks:
+      - app-network
+
+  user-service:
+    build: ./user-service
+    image: user-service
+    container_name: user-service
+    env_file:
+      - ./.env
+    networks:
+      - app-network
+
+  product-service:
+    build: ./product-service
+    image: product-service
+    env_file:
+      - ./.env
+    networks:
+      - app-network
+
+  order-service:
+    build: ./order-service
+    image: order-service
+    env_file:
+      - ./.env
+    networks:
+      - app-network
+
+  frontend:
+    build: ./frontend
+    image: frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

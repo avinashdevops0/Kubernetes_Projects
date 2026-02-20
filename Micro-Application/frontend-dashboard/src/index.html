@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microservices Dashboard | E-Commerce Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🛒 ShopAdmin</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="users">
+                    <span class="nav-icon">👥</span>
+                    <span class="nav-text">Users</span>
+                </a>
+                <a href="#" class="nav-item" data-section="products">
+                    <span class="nav-icon">📦</span>
+                    <span class="nav-text">Products</span>
+                </a>
+                <a href="#" class="nav-item" data-section="orders">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-text">Orders</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="status-item">
+                    <span class="status-label">API:</span>
+                    <span class="status-value" id="gateway-status">Checking...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Microservices Dashboard</h1>
+                <p class="subtitle">E-commerce Management System</p>
+            </header>
+
+            <!-- Overview Statistics Section -->
+            <div class="overview-section">
+                <div class="overview-card">
+                    <div class="overview-icon">👥</div>
+                    <div class="overview-content">
+                        <h3>Total Users</h3>
+                        <p class="overview-count" id="total-users">0</p>
+                    </div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-icon">📦</div>
+                    <div class="overview-content">
+                        <h3>Total Products</h3>
+                        <p class="overview-count" id="total-products">0</p>
+                    </div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-icon">📋</div>
+                    <div class="overview-content">
+                        <h3>Total Orders</h3>
+                        <p class="overview-count" id="total-orders">0</p>
+                    </div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-icon">💰</div>
+                    <div class="overview-content">
+                        <h3>Total Revenue</h3>
+                        <p class="overview-count" id="total-revenue">$0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders by Status -->
+            <div class="stats-section">
+                <h3>Orders by Status</h3>
+                <div class="stats-grid">
+                    <div class="stat-card pending">
+                        <span class="stat-label">Pending</span>
+                        <span class="stat-count" id="orders-pending">0</span>
+                    </div>
+                    <div class="stat-card processing">
+                        <span class="stat-label">Processing</span>
+                        <span class="stat-count" id="orders-processing">0</span>
+                    </div>
+                    <div class="stat-card completed">
+                        <span class="stat-label">Completed</span>
+                        <span class="stat-count" id="orders-completed">0</span>
+                    </div>
+                    <div class="stat-card cancelled">
+                        <span class="stat-label">Cancelled</span>
+                        <span class="stat-count" id="orders-cancelled">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Sections -->
+            <div class="content-sections">
+                <!-- Users Section -->
+                <section class="section-item active" id="users-section">
+                    <div class="section-header">
+                        <h2>👥 Users Management</h2>
+                    </div>
+                    
+                    <!-- Create User Form -->
+                    <div class="create-form-card">
+                        <h3>Create New User</h3>
+                        <form id="user-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="user-name">Name:</label>
+                                    <input type="text" id="user-name" required placeholder="John Doe">
+                                </div>
+                                <div class="form-group">
+                                    <label for="user-email">Email:</label>
+                                    <input type="email" id="user-email" required placeholder="john@example.com">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Add User</button>
+                            </div>
+                        </form>
+                        <div id="user-message" class="message"></div>
+                    </div>
+
+                    <!-- Users List -->
+                    <div class="list-section">
+                        <div class="list-header">
+                            <h3>All Users</h3>
+                            <button id="refresh-users" class="btn btn-small">🔄 Refresh</button>
+                        </div>
+                        <div class="list-container">
+                            <div id="users-loading" class="loading">Loading users...</div>
+                            <div id="users-error" class="error-message hidden"></div>
+                            <div id="users-list" class="items-grid"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Products Section -->
+                <section class="section-item" id="products-section">
+                    <div class="section-header">
+                        <h2>📦 Products Management</h2>
+                    </div>
+                    
+                    <!-- Create Product Form -->
+                    <div class="create-form-card">
+                        <h3>Create New Product</h3>
+                        <form id="product-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="product-name">Name:</label>
+                                    <input type="text" id="product-name" required placeholder="Product name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="product-price">Price ($):</label>
+                                    <input type="number" id="product-price" step="0.01" min="0.01" required placeholder="19.99">
+                                </div>
+                                <div class="form-group">
+                                    <label for="product-description">Description:</label>
+                                    <input type="text" id="product-description" placeholder="Description">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Add Product</button>
+                            </div>
+                        </form>
+                        <div id="product-message" class="message"></div>
+                    </div>
+
+                    <!-- Products List -->
+                    <div class="list-section">
+                        <div class="list-header">
+                            <h3>All Products</h3>
+                            <button id="refresh-products" class="btn btn-small">🔄 Refresh</button>
+                        </div>
+                        <div class="list-container">
+                            <div id="products-loading" class="loading">Loading products...</div>
+                            <div id="products-error" class="error-message hidden"></div>
+                            <div id="products-list" class="items-grid"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Orders Section -->
+                <section class="section-item" id="orders-section">
+                    <div class="section-header">
+                        <h2>📋 Orders Management</h2>
+                    </div>
+                    
+                    <!-- Create Order Form -->
+                    <div class="create-form-card">
+                        <h3>Create New Order</h3>
+                        <form id="order-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="order-user">Select User:</label>
+                                    <select id="order-user" required>
+                                        <option value="">-- Select User --</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="order-product">Select Product:</label>
+                                    <select id="order-product" required>
+                                        <option value="">-- Select Product --</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="order-quantity">Quantity:</label>
+                                    <input type="number" id="order-quantity" min="1" value="1" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Place Order</button>
+                            </div>
+                        </form>
+                        <div id="order-message" class="message"></div>
+                    </div>
+
+                    <!-- Orders List -->
+                    <div class="list-section">
+                        <div class="list-header">
+                            <h3>All Orders</h3>
+                            <button id="refresh-orders" class="btn btn-small">🔄 Refresh</button>
+                        </div>
+                        <div class="list-container">
+                            <div id="orders-loading" class="loading">Loading orders...</div>
+                            <div id="orders-error" class="error-message hidden"></div>
+                            <div id="orders-list" class="items-grid"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Edit</h3>
+                <span class="modal-close" id="modal-close">&times;</span>
+            </div>
+            <form id="edit-form">
+                <div id="edit-form-fields"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="modal-cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
