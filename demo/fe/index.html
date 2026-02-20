@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Static Users App</title>
+</head>
+<body>
+  <h1>User List</h1>
+
+  <ul id="userList"></ul>
+
+  <h2>Add User</h2>
+  <input type="text" id="username" placeholder="Enter name" />
+  <button onclick="addUser()">Add</button>
+
+  <script>
+    // Use Ingress path, no localhost
+    const API_URL = "/api/users";
+
+    async function loadUsers() {
+      const res = await fetch(API_URL);
+      const users = await res.json();
+
+      const list = document.getElementById("userList");
+      list.innerHTML = "";
+
+      users.forEach(user => {
+        const li = document.createElement("li");
+        li.textContent = user.name;
+        list.appendChild(li);
+      });
+    }
+
+    async function addUser() {
+      const name = document.getElementById("username").value;
+
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name })
+      });
+
+      document.getElementById("username").value = "";
+      loadUsers();
+    }
+
+    loadUsers();
+  </script>
+</body>
+</html>

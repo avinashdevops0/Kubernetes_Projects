@@ -1,0 +1,111 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: user-service
+  labels:
+    app: user-service
+spec:
+  containers:
+    - name: user-service
+      image: avinashg0/sweety-user
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  selector:
+    app: user-service
+  ports:
+    - port: 80
+      targetPort: 5000
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: api-gateway
+  labels:
+    app: api-gateway
+spec:
+  containers:
+    - name: api-gateway
+      image: avinashg0/sweety-api
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 4000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+spec:
+  selector:
+    app: api-gateway
+  ports:
+    - port: 80
+      targetPort: 4000
+  type: ClusterIp
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  containers:
+    - name: frontend
+      image: avinashg0/sweety-fe
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 80
+      targetPort: 80
+  type: ClusterIP
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      # Backend API versioned
+      - path: /api(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: api-gateway
+            port:
+              number: 80
+      # Frontend catch-all
+      - path: /(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 80

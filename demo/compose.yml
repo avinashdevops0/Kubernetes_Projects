@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+
+  user-service:
+    build: ./user-service
+    image: avinashg0/sweety-user
+
+  api-gateway:
+    build: ./api-gateway
+    image: avinashg0/sweety-api
+
+  frontend:
+    build: ./frontend
+    image: avinashg0/sweety-fe
