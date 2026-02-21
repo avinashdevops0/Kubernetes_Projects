@@ -1,0 +1,86 @@
+pipeline {
+    agent any 
+    stages{
+        stage('Clean WorkSpace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Code') {
+            steps {
+                git branch:'', url:''
+            }
+        }
+        stage('Installing Dependencies') {
+            steps {
+                dir('Micro-Application/api-gateway') {
+                    sh 'npm install --production'
+                }
+                dir('Micro-Application/user-service') {
+                    sh 'npm install --production'
+                }
+                dir('Micro-Application/product-service') {
+                    sh 'npm install --production'
+                }
+                dir('Micro-Application/order-service') {
+                    sh 'npm install --production'
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                dir('Micro-Application/api-gateway') {
+                    sh 'npm test'
+                }
+                dir('Micro-Application/user-service') {
+                    sh 'npm test'
+                }
+                dir('Micro-Application/product-service') {
+                    sh 'npm test'
+                }
+                dir('Micro-Application/order-service') {
+                    sh 'npm test'
+                }
+            }
+        }
+        stage('Code Quality Analysis') {
+            steps {
+
+            }
+        }
+        stage('Quality gates') {
+            steps {
+
+            }
+        }
+        stage('Building Images') {
+            steps {
+                dir('Micro-Application/api-gateway') {
+                    sh 'docker image build -t api-gateway:${BUILD_NUMBER} .'
+                }
+                dir('Micro-Application/user-service') {
+                    sh 'docker image build -t user-service:${BUILD_NUMBER} .'
+                }
+                dir('Micro-Application/product-service') {
+                    sh 'docker image build -t product-service:${BUILD_NUMBER} .'
+                }
+                dir('Micro-Application/order-service') {
+                    sh 'docker image build -t order-service:${BUILD_NUMBER} .'
+                }
+            }
+        }
+        stage('Trivy Image scan') {
+            steps {
+                sh 'trivy image api-gateway:${BUILD_NUMBER}'
+                sh 'trivy image user-service:${BUILD_NUMBER}'
+                sh 'trivy image product-service:${BUILD_NUMBER}'
+                sh 'trivy image order-service:${BUILD_NUMBER}'
+            }
+        }
+        stage('Image Tag, Docker Login & Pusing to Registry') {
+            steps {
+                
+            }
+        }
+    }
+}
