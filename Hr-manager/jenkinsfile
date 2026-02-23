@@ -1,0 +1,136 @@
+pipeline {
+    agent any
+        stages {
+            stage('Cleanwork Space') {
+                steps {
+                    cleanWs()
+                }
+            }
+            stage('Code') {
+                steps {
+                    git branch:'main', url:'https://github.com/avinashdevops0/Kubernetes_Projects.git'
+                }
+            }
+            stage('SonarQube Scan') {
+                steps {
+                script {
+                    def scannerHome = tool 'mysonar'
+                    withSonarQubeEnv('mysonar') {
+                        sh """
+                        ${scannerHome}/bin/sonar-scanner \
+                          -Dsonar.projectKey=Hr_Manager \
+                          -Dsonar.projectName=Hr_Manager \
+                          -Dsonar.sources=. \
+                          -Dsonar.java.binaries=. 
+                        """
+                    }
+                }
+            }
+           }
+        //   stage('Quality Gate') {
+        //     steps {
+        //         timeout(time: 4, unit: 'MINUTES') { // Set a timeout to prevent infinite waiting
+        //             // Pauses pipeline and waits for the webhook to report the Quality Gate status
+        //             waitForQualityGate abortPipeline: true 
+        //         }
+        //     }
+        // }
+        stage('Docker Building Images') {
+            parallel {
+                stage('Frontend'){
+                    steps {
+                        dir('Hr-manager/frontend/') {
+                            sh 'docker image build -t avinashg0/hr:frontend-${BUILD_NUMBER} .'
+                        }
+                    }
+                }
+                stage('Api-gateway') {
+                    steps {
+                        dir('Hr-manager/api-gateway/') {
+                            sh 'docker image build -t avinashg0/hr:api-gateway-${BUILD_NUMBER} .'
+                        }
+                    }
+                }
+                stage('Announcement-service') {
+                    steps {
+                        dir('Hr-manager/announcement-service/') {
+                            sh 'docker image build -t avinashg0/hr:announcement-service-${BUILD_NUMBER} .'
+                        }
+                    }
+                }
+                stage('Attendance-service') {
+                    steps {
+                        dir('Hr-manager/attendance-service/') {
+                            sh 'docker image build -t avinashg0/hr:attendance-service-${BUILD_NUMBER} .'
+                        }
+                    }
+                }
+                stage('department-service') {
+                    steps {
+                        dir('Hr-manager/department-service/') {
+                            sh 'docker image build -t avinashg0/hr:department-service-${BUILD_NUMBER} .'
+                        }
+                    }
+                }
+                stage('employee-service') {
+                    steps {
+                        dir('Hr-manager/employee-service/') {
+                           sh 'docker image build -t avinashg0/hr:employee-service-${BUILD_NUMBER} .'
+                        }
+                    }
+                }
+                stage('leave-service') {
+                    steps {
+                        dir('Hr-manager/leave-service/') {
+                            sh 'docker image build -t avinashg0/hr:leave-service-${BUILD_NUMBER} .'
+                        }
+                    }
+                }
+                stage('payroll-service') {
+                    steps {
+                        dir('Hr-manage/payroll-service/') {
+                            sh 'docker image build -t avinashg0/hr:payroll-service-${BUILD_NUMBER} .'
+                        }
+                    }
+                }
+                stage('review-service') {
+                    steps {
+                        dir('Hr-manage/review-service/') {
+                            sh 'docker image build -t avinashg0/hr:review-service-${BUILD_NUMBER} .'
+                        }
+                    }
+                }
+            }
+        }
+        stage('Docker Login and Push') {
+            steps{
+withDockerRegistry(credentialsId: 'docker', url: ' https://index.docker.io/v1/') {
+   sh 'docker push avinashg0/hr:frontend-${BUILD_NUMBER}'
+   sh 'docker push avinashg0/hr:api-gateway-${BUILD_NUMBER}'
+   sh 'docker push avinashg0/hr:announcement-service-${BUILD_NUMBER}'
+   sh 'docker push avinashg0/hr:attendance-service-${BUILD_NUMBER}'
+   sh 'docker push avinashg0/hr:department-service-${BUILD_NUMBER}'
+   sh 'docker push avinashg0/hr:employee-service-${BUILD_NUMBER}'
+   sh 'docker push avinashg0/hr:leave-service-${BUILD_NUMBER}'
+   sh 'docker push avinashg0/hr:payroll-service-${BUILD_NUMBER}'
+   sh 'docker push avinashg0/hr:review-service-${BUILD_NUMBER}'
+}
+            }
+        }
+        stage('Helm Validation') {
+            steps {
+
+            }
+        }
+        stage('Updating Helm Chats') {
+            steps{
+
+            }
+        }
+        stage('Deploy') {
+            steps {
+                
+            }
+        }
+     }
+}

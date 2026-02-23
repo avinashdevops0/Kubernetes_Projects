@@ -6,24 +6,5 @@ Hr-manager/department-service/node_modules
 Hr-manager/employee-service/node_modules
 Hr-manager/frontend/node_modules
 Hr-manager/leave-service/node_modules
-Hr-manage
-
-# Hr manager application package-lock.json 
-Hrmanager/an nouncemen t-s ervice/p ackage-l ock.json       
-Hrm anager/a pi-ga teway/package-lock.json          
-Hm anager/a ttendance -service/package-lock.json           
-Hm anager/d epartme nt-ser vice/package-lock.json         
-Hm anager/e mpl oyee-s ervice/package-lock.json           
-H rm anger/l ease- service/packa ge-lo ck.js on            
-Hmmangaerp ayroll -serv ice/packagelockjson              
-Hm angerrviewse rvice/package lockjson                 
-
-# Hr-management software pack age-lo ck.j son  
- H rmanager /an nouncem ent-se rvice /package-l ock .json    
- Hrma nager/ap i-gat eway/p ackag elock json               
- Hrmana ger/at tendance -service /packa ge-lo ck.js on      
- Hrma nger/de partmen t-ser vice /package-loc k.jso n       
- Hrman ager/em ployee-s ervice /packa ge-lo ck.js on        
- Hr-m anag er/le ave-ser vice/p ack age-loc k.jso n         
- HRmang er/pay roll-se rvice/PACKAG ELOCK.JSON              
-HRMANG ER/re view-s ervice/PackageLock.Json                
+Hr-manage/payroll-service/node_modules
+Hr-manage/review-service/node_modules            
