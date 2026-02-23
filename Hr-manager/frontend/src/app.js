@@ -1,4 +1,4 @@
-const API_GATEWAY_URL = 'http://localhost:3000';
+const API_GATEWAY_URL = '/api';
 
 let currentEditType = '';
 let currentEditId = null;
