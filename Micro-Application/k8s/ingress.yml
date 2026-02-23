@@ -1,28 +1,27 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: shopping-ingress
+  name: fe-ingress
+  namespace: shopping
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   ingressClassName: nginx
   rules:
-  - http:
-      paths:
-      # Backend API versioned
-      - path: /api(/|$)(.*)
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: shopping-api-gateway-service
-            port:
-              number: 80
-      # Frontend catch-all
-      - path: /(.*)
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: fe-service
-            port:
-              number: 80
+    - http:
+        paths:
+          - path: /api(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: api-svc
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: fe-svc
+                port:
+                  number: 80

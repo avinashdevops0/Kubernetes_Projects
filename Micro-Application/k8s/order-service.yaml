@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-deploy
+  namespace: shopping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order
+  template:
+    metadata:
+      labels:
+        app: order
+    spec:
+      containers:
+        - name: order-container
+          image: avinashg0/micro:order-1
+          ports:
+            - containerPort: 3003
+          envFrom:
+            - configMapRef:
+                name: order-configmap
+            - secretRef:
+                name: rds-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+  namespace: shopping
+spec:
+  type: ClusterIP
+  selector:
+    app: order
+  ports:
+    - port: 80
+      targetPort: 3003

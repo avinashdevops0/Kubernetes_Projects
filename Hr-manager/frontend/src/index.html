@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Manager | Human Resources Management System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>👥 HR Manager</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-section="employees">
+                    <span class="nav-icon">👨‍💼</span>
+                    <span class="nav-text">Employees</span>
+                </a>
+                <a href="#" class="nav-item" data-section="departments">
+                    <span class="nav-icon">🏢</span>
+                    <span class="nav-text">Departments</span>
+                </a>
+                <a href="#" class="nav-item" data-section="attendance">
+                    <span class="nav-icon">🕐</span>
+                    <span class="nav-text">Attendance</span>
+                </a>
+                <a href="#" class="nav-item" data-section="leave">
+                    <span class="nav-icon">📅</span>
+                    <span class="nav-text">Leave Requests</span>
+                </a>
+                <a href="#" class="nav-item" data-section="payroll">
+                    <span class="nav-icon">💵</span>
+                    <span class="nav-text">Payroll</span>
+                </a>
+                <a href="#" class="nav-item" data-section="reviews">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-text">Performance Reviews</span>
+                </a>
+                <a href="#" class="nav-item" data-section="announcements">
+                    <span class="nav-icon">📢</span>
+                    <span class="nav-text">Announcements</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="status-item">
+                    <span class="status-label">API:</span>
+                    <span class="status-value" id="gateway-status">Checking...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1>HR Management System</h1>
+                <p class="subtitle">Human Resources Dashboard</p>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section class="section-item active" id="dashboard-section">
+                <!-- Overview Statistics -->
+                <div class="overview-section">
+                    <div class="overview-card">
+                        <div class="overview-icon">👨‍💼</div>
+                        <div class="overview-content">
+                            <h3>Total Employees</h3>
+                            <p class="overview-count" id="total-employees">0</p>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="overview-icon">🏢</div>
+                        <div class="overview-content">
+                            <h3>Departments</h3>
+                            <p class="overview-count" id="total-departments">0</p>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="overview-icon">📅</div>
+                        <div class="overview-content">
+                            <h3>Pending Leaves</h3>
+                            <p class="overview-count" id="pending-leaves">0</p>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="overview-icon">⭐</div>
+                        <div class="overview-content">
+                            <h3>Reviews This Year</h3>
+                            <p class="overview-count" id="total-reviews">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats by Department -->
+                <div class="stats-section">
+                    <h3>Employees by Department</h3>
+                    <div class="stats-grid" id="dept-stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-label">Loading...</span>
+                            <span class="stat-count">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="list-section">
+                    <div class="list-header">
+                        <h3>Recent Employees</h3>
+                    </div>
+                    <div class="list-container">
+                        <div id="recent-employees" class="items-grid"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Employees Section -->
+            <section class="section-item" id="employees-section">
+                <div class="section-header">
+                    <h2>👨‍💼 Employees Management</h2>
+                </div>
+                
+                <!-- Create Employee Form -->
+                <div class="create-form-card">
+                    <h3>Add New Employee</h3>
+                    <form id="employee-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="emp-name">Full Name:</label>
+                                <input type="text" id="emp-name" required placeholder="John Doe">
+                            </div>
+                            <div class="form-group">
+                                <label for="emp-email">Email:</label>
+                                <input type="email" id="emp-email" required placeholder="john@company.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="emp-position">Position:</label>
+                                <input type="text" id="emp-position" required placeholder="Software Engineer">
+                            </div>
+                            <div class="form-group">
+                                <label for="emp-department">Department:</label>
+                                <select id="emp-department" required>
+                                    <option value="">-- Select Department --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="emp-salary">Salary ($):</label>
+                                <input type="number" id="emp-salary" step="0.01" min="0" placeholder="50000.00">
+                            </div>
+                            <div class="form-group">
+                                <label for="emp-hire-date">Hire Date:</label>
+                                <input type="date" id="emp-hire-date" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Employee</button>
+                        </div>
+                    </form>
+                    <div id="employee-message" class="message"></div>
+                </div>
+
+                <!-- Employees List -->
+                <div class="list-section">
+                    <div class="list-header">
+                        <h3>All Employees</h3>
+                        <button id="refresh-employees" class="btn btn-small">🔄 Refresh</button>
+                    </div>
+                    <div class="list-container">
+                        <div id="employees-loading" class="loading">Loading employees...</div>
+                        <div id="employees-error" class="error-message hidden"></div>
+                        <div id="employees-list" class="items-grid"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Departments Section -->
+            <section class="section-item" id="departments-section">
+                <div class="section-header">
+                    <h2>🏢 Departments Management</h2>
+                </div>
+                
+                <!-- Create Department Form -->
+                <div class="create-form-card">
+                    <h3>Add New Department</h3>
+                    <form id="department-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="dept-name">Department Name:</label>
+                                <input type="text" id="dept-name" required placeholder="Engineering">
+                            </div>
+                            <div class="form-group">
+                                <label for="dept-description">Description:</label>
+                                <input type="text" id="dept-description" placeholder="Software development and maintenance">
+                            </div>
+                            <div class="form-group">
+                                <label for="dept-manager">Manager:</label>
+                                <select id="dept-manager">
+                                    <option value="">-- Select Manager --</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Department</button>
+                        </div>
+                    </form>
+                    <div id="department-message" class="message"></div>
+                </div>
+
+                <!-- Departments List -->
+                <div class="list-section">
+                    <div class="list-header">
+                        <h3>All Departments</h3>
+                        <button id="refresh-departments" class="btn btn-small">🔄 Refresh</button>
+                    </div>
+                    <div class="list-container">
+                        <div id="departments-loading" class="loading">Loading departments...</div>
+                        <div id="departments-error" class="error-message hidden"></div>
+                        <div id="departments-list" class="items-grid"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Leave Requests Section -->
+            <section class="section-item" id="leave-section">
+                <div class="section-header">
+                    <h2>📅 Leave Requests Management</h2>
+                </div>
+                
+                <!-- Create Leave Request Form -->
+                <div class="create-form-card">
+                    <h3>Submit Leave Request</h3>
+                    <form id="leave-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="leave-employee">Employee:</label>
+                                <select id="leave-employee" required>
+                                    <option value="">-- Select Employee --</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="leave-type">Leave Type:</label>
+                                <select id="leave-type" required>
+                                    <option value="">-- Select Type --</option>
+                                    <option value="annual">Annual Leave</option>
+                                    <option value="sick">Sick Leave</option>
+                                    <option value="personal">Personal Leave</option>
+                                    <option value="maternity">Maternity/Paternity</option>
+                                    <option value="unpaid">Unpaid Leave</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="leave-start">Start Date:</label>
+                                <input type="date" id="leave-start" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="leave-end">End Date:</label>
+                                <input type="date" id="leave-end" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 2;">
+                                <label for="leave-reason">Reason:</label>
+                                <input type="text" id="leave-reason" placeholder="Reason for leave">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Request</button>
+                        </div>
+                    </form>
+                    <div id="leave-message" class="message"></div>
+                </div>
+
+                <!-- Leave Requests List -->
+                <div class="list-section">
+                    <div class="list-header">
+                        <h3>All Leave Requests</h3>
+                        <button id="refresh-leaves" class="btn btn-small">🔄 Refresh</button>
+                    </div>
+                    <div class="list-container">
+                        <div id="leaves-loading" class="loading">Loading leave requests...</div>
+                        <div id="leaves-error" class="error-message hidden"></div>
+                        <div id="leaves-list" class="items-grid"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Performance Reviews Section -->
+            <section class="section-item" id="reviews-section">
+                <div class="section-header">
+                    <h2>📈 Performance Reviews Management</h2>
+                </div>
+                
+                <!-- Create Review Form -->
+                <div class="create-form-card">
+                    <h3>Create Performance Review</h3>
+                    <form id="review-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="review-employee">Employee:</label>
+                                <select id="review-employee" required>
+                                    <option value="">-- Select Employee --</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="review-date">Review Date:</label>
+                                <input type="date" id="review-date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="review-rating">Rating (1-5):</label>
+                                <select id="review-rating" required>
+                                    <option value="">-- Select Rating --</option>
+                                    <option value="1">1 - Poor</option>
+                                    <option value="2">2 - Below Average</option>
+                                    <option value="3">3 - Average</option>
+                                    <option value="4">4 - Good</option>
+                                    <option value="5">5 - Excellent</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 2;">
+                                <label for="review-comments">Comments:</label>
+                                <textarea id="review-comments" rows="3" placeholder="Performance feedback and comments"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                        </div>
+                    </form>
+                    <div id="review-message" class="message"></div>
+                </div>
+
+                <!-- Reviews List -->
+                <div class="list-section">
+                    <div class="list-header">
+                        <h3>All Performance Reviews</h3>
+                        <button id="refresh-reviews" class="btn btn-small">🔄 Refresh</button>
+                    </div>
+                    <div class="list-container">
+                        <div id="reviews-loading" class="loading">Loading reviews...</div>
+                        <div id="reviews-error" class="error-message hidden"></div>
+                        <div id="reviews-list" class="items-grid"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Attendance Section -->
+            <section class="section-item" id="attendance-section">
+                <div class="section-header">
+                    <h2>🕐 Attendance Management</h2>
+                </div>
+                
+                <!-- Clock In/Out Card -->
+                <div class="create-form-card">
+                    <h3>Clock In / Clock Out</h3>
+                    <form id="attendance-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="att-employee">Employee:</label>
+                                <select id="att-employee" required>
+                                    <option value="">-- Select Employee --</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="att-date">Date:</label>
+                                <input type="date" id="att-date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="att-clock-in">Clock In Time:</label>
+                                <input type="time" id="att-clock-in" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="att-clock-out">Clock Out Time:</label>
+                                <input type="time" id="att-clock-out">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 2;">
+                                <label for="att-notes">Notes:</label>
+                                <input type="text" id="att-notes" placeholder="Any additional notes">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Record Attendance</button>
+                        </div>
+                    </form>
+                    <div id="attendance-message" class="message"></div>
+                </div>
+
+                <!-- Attendance Records List -->
+                <div class="list-section">
+                    <div class="list-header">
+                        <h3>Attendance Records</h3>
+                        <button id="refresh-attendance" class="btn btn-small">🔄 Refresh</button>
+                    </div>
+                    <div class="list-container">
+                        <div id="attendance-loading" class="loading">Loading attendance records...</div>
+                        <div id="attendance-error" class="error-message hidden"></div>
+                        <div id="attendance-list" class="items-grid"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Payroll Section -->
+            <section class="section-item" id="payroll-section">
+                <div class="section-header">
+                    <h2>💵 Payroll Management</h2>
+                </div>
+                
+                <!-- Create Payroll Record Form -->
+                <div class="create-form-card">
+                    <h3>Process Payroll</h3>
+                    <form id="payroll-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="pay-employee">Employee:</label>
+                                <select id="pay-employee" required>
+                                    <option value="">-- Select Employee --</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="pay-period-start">Period Start:</label>
+                                <input type="date" id="pay-period-start" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="pay-period-end">Period End:</label>
+                                <input type="date" id="pay-period-end" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="pay-basic">Basic Salary ($):</label>
+                                <input type="number" id="pay-basic" step="0.01" min="0" placeholder="5000.00">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="pay-allowances">Allowances ($):</label>
+                                <input type="number" id="pay-allowances" step="0.01" min="0" placeholder="0.00">
+                            </div>
+                            <div class="form-group">
+                                <label for="pay-deductions">Deductions ($):</label>
+                                <input type="number" id="pay-deductions" step="0.01" min="0" placeholder="0.00">
+                            </div>
+                            <div class="form-group">
+                                <label for="pay-status">Status:</label>
+                                <select id="pay-status" required>
+                                    <option value="pending">Pending</option>
+                                    <option value="processed">Processed</option>
+                                    <option value="paid">Paid</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Process Payroll</button>
+                        </div>
+                    </form>
+                    <div id="payroll-message" class="message"></div>
+                </div>
+
+                <!-- Payroll Records List -->
+                <div class="list-section">
+                    <div class="list-header">
+                        <h3>Payroll Records</h3>
+                        <button id="refresh-payroll" class="btn btn-small">🔄 Refresh</button>
+                    </div>
+                    <div class="list-container">
+                        <div id="payroll-loading" class="loading">Loading payroll records...</div>
+                        <div id="payroll-error" class="error-message hidden"></div>
+                        <div id="payroll-list" class="items-grid"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Announcements Section -->
+            <section class="section-item" id="announcements-section">
+                <div class="section-header">
+                    <h2>📢 Announcements Management</h2>
+                </div>
+                
+                <!-- Create Announcement Form -->
+                <div class="create-form-card">
+                    <h3>Post New Announcement</h3>
+                    <form id="announcement-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="ann-title">Title:</label>
+                                <input type="text" id="ann-title" required placeholder="Company Meeting">
+                            </div>
+                            <div class="form-group">
+                                <label for="ann-category">Category:</label>
+                                <select id="ann-category" required>
+                                    <option value="">-- Select Category --</option>
+                                    <option value="general">General</option>
+                                    <option value="policy">Policy Update</option>
+                                    <option value="event">Event</option>
+                                    <option value="holiday">Holiday</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="ann-date">Posted Date:</label>
+                                <input type="date" id="ann-date" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 2;">
+                                <label for="ann-content">Content:</label>
+                                <textarea id="ann-content" rows="4" placeholder="Announcement details..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Post Announcement</button>
+                        </div>
+                    </form>
+                    <div id="announcement-message" class="message"></div>
+                </div>
+
+                <!-- Announcements List -->
+                <div class="list-section">
+                    <div class="list-header">
+                        <h3>All Announcements</h3>
+                        <button id="refresh-announcements" class="btn btn-small">🔄 Refresh</button>
+                    </div>
+                    <div class="list-container">
+                        <div id="announcements-loading" class="loading">Loading announcements...</div>
+                        <div id="announcements-error" class="error-message hidden"></div>
+                        <div id="announcements-list" class="items-grid"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Edit</h3>
+                <span class="modal-close" id="modal-close">&times;</span>
+            </div>
+            <form id="edit-form">
+                <div id="edit-form-fields"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="modal-cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

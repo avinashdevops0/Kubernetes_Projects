@@ -1,0 +1,32 @@
+apiVersion: apps/v1 
+kind: Depoyment
+metadata:
+  name: fe-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web-cont
+          image: avinashg0/hr:web
+          ports:
+            - containerPort: 80
+
+---
+apiVersion: v1 
+kind: Service
+metadata:
+  name: fe-svc
+spec:
+  selector:
+    app: web
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80

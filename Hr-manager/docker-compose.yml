@@ -1,0 +1,198 @@
+version: '3.8'
+
+services:
+  # API Gateway
+  api-gateway:
+    build: ./api-gateway
+    container_name: hr-api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - EMPLOYEE_SERVICE_URL=http://hr-employee-service:3001
+      - DEPARTMENT_SERVICE_URL=http://hr-department-service:3002
+      - LEAVE_SERVICE_URL=http://hr-leave-service:3003
+      - REVIEW_SERVICE_URL=http://hr-review-service:3004
+      - ATTENDANCE_SERVICE_URL=http://hr-attendance-service:3005
+      - PAYROLL_SERVICE_URL=http://hr-payroll-service:3006
+      - ANNOUNCEMENT_SERVICE_URL=http://hr-announcement-service:3007
+    depends_on:
+      - employee-service
+      - department-service
+      - leave-service
+      - review-service
+      - attendance-service
+      - payroll-service
+      - announcement-service
+    networks:
+      - hr-network
+
+  # Employee Service
+  employee-service:
+    build: ./employee-service
+    container_name: hr-employee-service
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - EMPLOYEE_DB_HOST=mysql
+      - EMPLOYEE_DB_PORT=3306
+      - EMPLOYEE_DB_USER=root
+      - EMPLOYEE_DB_PASSWORD=hrpassword
+      - EMPLOYEE_DB_NAME=employee_db
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - hr-network
+
+  # Department Service
+  department-service:
+    build: ./department-service
+    container_name: hr-department-service
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - DEPARTMENT_DB_HOST=mysql
+      - DEPARTMENT_DB_PORT=3306
+      - DEPARTMENT_DB_USER=root
+      - DEPARTMENT_DB_PASSWORD=hrpassword
+      - DEPARTMENT_DB_NAME=department_db
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - hr-network
+
+  # Leave Service
+  leave-service:
+    build: ./leave-service
+    container_name: hr-leave-service
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+      - LEAVE_DB_HOST=mysql
+      - LEAVE_DB_PORT=3306
+      - LEAVE_DB_USER=root
+      - LEAVE_DB_PASSWORD=hrpassword
+      - LEAVE_DB_NAME=leave_db
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - hr-network
+
+  # Review Service
+  review-service:
+    build: ./review-service
+    container_name: hr-review-service
+    ports:
+      - "3004:3004"
+    environment:
+      - PORT=3004
+      - REVIEW_DB_HOST=mysql
+      - REVIEW_DB_PORT=3306
+      - REVIEW_DB_USER=root
+      - REVIEW_DB_PASSWORD=hrpassword
+      - REVIEW_DB_NAME=review_db
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - hr-network
+
+  # Attendance Service
+  attendance-service:
+    build: ./attendance-service
+    container_name: hr-attendance-service
+    ports:
+      - "3005:3005"
+    environment:
+      - PORT=3005
+      - ATTENDANCE_DB_HOST=mysql
+      - ATTENDANCE_DB_PORT=3306
+      - ATTENDANCE_DB_USER=root
+      - ATTENDANCE_DB_PASSWORD=hrpassword
+      - ATTENDANCE_DB_NAME=attendance_db
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - hr-network
+
+  # Payroll Service
+  payroll-service:
+    build: ./payroll-service
+    container_name: hr-payroll-service
+    ports:
+      - "3006:3006"
+    environment:
+      - PORT=3006
+      - PAYROLL_DB_HOST=mysql
+      - PAYROLL_DB_PORT=3306
+      - PAYROLL_DB_USER=root
+      - PAYROLL_DB_PASSWORD=hrpassword
+      - PAYROLL_DB_NAME=payroll_db
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - hr-network
+
+  # Announcement Service
+  announcement-service:
+    build: ./announcement-service
+    container_name: hr-announcement-service
+    ports:
+      - "3007:3007"
+    environment:
+      - PORT=3007
+      - ANNOUNCEMENT_DB_HOST=mysql
+      - ANNOUNCEMENT_DB_PORT=3306
+      - ANNOUNCEMENT_DB_USER=root
+      - ANNOUNCEMENT_DB_PASSWORD=hrpassword
+      - ANNOUNCEMENT_DB_NAME=announcement_db
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - hr-network
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: hr-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=hrpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hr-network
+
+  # Frontend (nginx)
+  frontend:
+    build: ./frontend
+    container_name: hr-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - hr-network
+
+networks:
+  hr-network:
+    driver: bridge
+
+volumes:
+  mysql-data:

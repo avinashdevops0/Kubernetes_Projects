@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-deploy
+  namespace: shopping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product
+  template:
+    metadata:
+      labels:
+        app: product
+    spec:
+      containers:
+        - name: product-container
+          image: avinashg0/micro:product-1
+          ports:
+            - containerPort: 3002
+          envFrom:
+            - configMapRef:
+                name: product-configmap
+            - secretRef:
+                name: rds-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+  namespace: shopping
+spec:
+  type: ClusterIP
+  selector:
+    app: product
+  ports:
+    - port: 80
+      targetPort: 3002

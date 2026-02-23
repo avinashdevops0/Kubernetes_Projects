@@ -1,86 +1,151 @@
 pipeline {
-    agent any 
-    stages{
-        stage('Clean WorkSpace') {
+    agent any
+
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
+        IMAGE_TAG = "${BUILD_NUMBER}"
+        NAMESPACE = "shopping"
+        SONAR_SERVER = "sonarqube"
+        APP_DIR = "Micro-Application"
+    }
+
+    stages {
+
+        stage('Clean Workspace') {
             steps {
                 cleanWs()
             }
         }
-        stage('Code') {
-            steps {
-                git branch:'', url:''
-            }
-        }
-        stage('Installing Dependencies') {
-            steps {
-                dir('Micro-Application/api-gateway') {
-                    sh 'npm install --production'
-                }
-                dir('Micro-Application/user-service') {
-                    sh 'npm install --production'
-                }
-                dir('Micro-Application/product-service') {
-                    sh 'npm install --production'
-                }
-                dir('Micro-Application/order-service') {
-                    sh 'npm install --production'
-                }
-            }
-        }
-        stage('Test') {
-            steps {
-                dir('Micro-Application/api-gateway') {
-                    sh 'npm test'
-                }
-                dir('Micro-Application/user-service') {
-                    sh 'npm test'
-                }
-                dir('Micro-Application/product-service') {
-                    sh 'npm test'
-                }
-                dir('Micro-Application/order-service') {
-                    sh 'npm test'
-                }
-            }
-        }
-        stage('Code Quality Analysis') {
-            steps {
 
+        stage('Checkout Code') {
+            steps {
+                git 'https://github.com/your-repo/shopping.git'
             }
         }
-        stage('Quality gates') {
-            steps {
 
-            }
-        }
-        stage('Building Images') {
+        stage('SonarQube Scan') {
             steps {
-                dir('Micro-Application/api-gateway') {
-                    sh 'docker image build -t api-gateway:${BUILD_NUMBER} .'
-                }
-                dir('Micro-Application/user-service') {
-                    sh 'docker image build -t user-service:${BUILD_NUMBER} .'
-                }
-                dir('Micro-Application/product-service') {
-                    sh 'docker image build -t product-service:${BUILD_NUMBER} .'
-                }
-                dir('Micro-Application/order-service') {
-                    sh 'docker image build -t order-service:${BUILD_NUMBER} .'
+                withSonarQubeEnv("${SONAR_SERVER}") {
+                    sh '''
+                        sonar-scanner \
+                          -Dsonar.projectKey=shopping-app \
+                          -Dsonar.sources=. \
+                          -Dsonar.host.url=$SONAR_HOST_URL \
+                          -Dsonar.login=$SONAR_AUTH_TOKEN
+                    '''
                 }
             }
         }
-        stage('Trivy Image scan') {
+
+        stage('Quality Gate') {
             steps {
-                sh 'trivy image api-gateway:${BUILD_NUMBER}'
-                sh 'trivy image user-service:${BUILD_NUMBER}'
-                sh 'trivy image product-service:${BUILD_NUMBER}'
-                sh 'trivy image order-service:${BUILD_NUMBER}'
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
-        stage('Image Tag, Docker Login & Pusing to Registry') {
-            steps {
-                
+
+        stage('Build Images') {
+            parallel {
+
+                stage('API Gateway') {
+                    steps {
+                        dir("${APP_DIR}/api-gateway") {
+                            sh 'docker build -t avinashg0/micro:api-${IMAGE_TAG} .'
+                        }
+                    }
+                }
+
+                stage('User Service') {
+                    steps {
+                        dir("${APP_DIR}/user-service") {
+                            sh 'docker build -t avinashg0/micro:user-${IMAGE_TAG} .'
+                        }
+                    }
+                }
+
+                stage('Product Service') {
+                    steps {
+                        dir("${APP_DIR}/product-service") {
+                            sh 'docker build -t avinashg0/micro:product-${IMAGE_TAG} .'
+                        }
+                    }
+                }
+
+                stage('Order Service') {
+                    steps {
+                        dir("${APP_DIR}/order-service") {
+                            sh 'docker build -t avinashg0/micro:order-${IMAGE_TAG} .'
+                        }
+                    }
+                }
+
+                stage('Frontend') {
+                    steps {
+                        dir("${APP_DIR}/frontend") {
+                            sh 'docker build -t avinashg0/micro:fe-${IMAGE_TAG} .'
+                        }
+                    }
+                }
             }
+        }
+
+        stage('Trivy Image Scan') {
+            steps {
+                sh '''
+                    trivy image avinashg0/micro:api-${IMAGE_TAG}
+                    trivy image avinashg0/micro:user-${IMAGE_TAG}
+                    trivy image avinashg0/micro:product-${IMAGE_TAG}
+                    trivy image avinashg0/micro:order-${IMAGE_TAG}
+                    trivy image avinashg0/micro:fe-${IMAGE_TAG}
+                '''
+            }
+        }
+
+        stage('Push Images') {
+            steps {
+                sh '''
+                    echo $DOCKERHUB_CREDENTIALS_PSW | docker login \
+                      -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
+
+                    docker push avinashg0/micro:api-${IMAGE_TAG}
+                    docker push avinashg0/micro:user-${IMAGE_TAG}
+                    docker push avinashg0/micro:product-${IMAGE_TAG}
+                    docker push avinashg0/micro:order-${IMAGE_TAG}
+                    docker push avinashg0/micro:fe-${IMAGE_TAG}
+                '''
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh '''
+                    kubectl set image deployment/api-deploy \
+                      api-container=avinashg0/micro:api-${IMAGE_TAG} -n ${NAMESPACE}
+
+                    kubectl set image deployment/user-deploy \
+                      user-container=avinashg0/micro:user-${IMAGE_TAG} -n ${NAMESPACE}
+
+                    kubectl set image deployment/product-deploy \
+                      product-container=avinashg0/micro:product-${IMAGE_TAG} -n ${NAMESPACE}
+
+                    kubectl set image deployment/order-deploy \
+                      order-container=avinashg0/micro:order-${IMAGE_TAG} -n ${NAMESPACE}
+
+                    kubectl set image deployment/fe-deploy \
+                      fe-container=avinashg0/micro:fe-${IMAGE_TAG} -n ${NAMESPACE}
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "🚀 Secure Deployment Successful — Version ${IMAGE_TAG}"
+        }
+
+        failure {
+            echo "❌ Pipeline Failed"
         }
     }
 }
