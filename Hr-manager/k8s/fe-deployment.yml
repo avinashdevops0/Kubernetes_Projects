@@ -1,5 +1,5 @@
-apiVersion: apps/v1 
-kind: Depoyment
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: web-deploy
 spec:
@@ -14,26 +14,26 @@ spec:
     spec:
       containers:
         - name: web-cont
-          image: avinashg0/hr:web-9
+          image: avinashg0/hr:fe-12
           ports:
             - containerPort: 80
 
 ---
-apiVersion: v1 
+apiVersion: v1
 kind: Service
 metadata:
   name: web-svc
 spec:
   selector:
     app: web
-  type: ClusterIP
   ports:
     - port: 80
       targetPort: 80
+  type: ClusterIP
 
 ---
-apiVersion: apps/v1 
-kind: Depoyment
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: api-deploy
 spec:
@@ -48,48 +48,84 @@ spec:
     spec:
       containers:
         - name: api-cont
-          image: avinashg0/hr:api-9
+          image: avinashg0/hr:api-12
           ports:
             - containerPort: 3000
 
 ---
-apiVersion: v1 
+apiVersion: v1
 kind: Service
 metadata:
   name: api-svc
 spec:
   selector:
     app: api
-  type: ClusterIP
   ports:
     - port: 80
-      targetPort: 80
+      targetPort: 3000
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: en-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: en
+  template:
+    metadata:
+      labels:
+        app: en
+    spec:
+      containers:
+        - name: en-cont
+          image: avinashg0/hr:api-12
+          ports:
+            - containerPort: 3007
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: en-service
+spec:
+  selector:
+    app: en
+  ports:
+    - port: 80
+      targetPort: 3007
+  type: ClusterIP  
 
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress
-  namespace: shopping
+  name: main-ingress
   annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   ingressClassName: nginx
   rules:
     - http:
         paths:
-          - path: /api(/|$)(.*)
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: api-svc
-                port:
-                  number: 80
-          - path: /
+          # Frontend route
+          - path: /(.*)
             pathType: Prefix
             backend:
               service:
                 name: web-svc
+                port:
+                  number: 80
+          # Backend API route
+          - path: /api/(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: api-svc
                 port:
                   number: 80

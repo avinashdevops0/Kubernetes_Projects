@@ -31,7 +31,7 @@ const SERVICES = {
   review: process.env.REVIEW_SERVICE_URL || 'http://localhost:3004',
   attendance: process.env.ATTENDANCE_SERVICE_URL || 'http://localhost:3005',
   payroll: process.env.PAYROLL_SERVICE_URL || 'http://localhost:3006',
-  announcement: process.env.ANNOUNCEMENT_SERVICE_URL || 'http://localhost:3007'
+  announcement: process.env.ANNOUNCEMENT_SERVICE_URL || 'http://en-service'
 };
 
 // Proxy middleware factory
