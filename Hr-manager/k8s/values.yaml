@@ -1,0 +1,91 @@
+replicaCount: 2
+
+# ---------------- Frontend -------------------------------
+frontend:
+  repository: avinashg0/hr
+  tag: frontend
+
+frontend-service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+# -------------------- API Gateway -----------------------------
+api-gateway:
+  repository: avinashg0/hr
+  tag: api-gateway
+
+api-gateway-service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+# -------------------- Employee Service -----------------------------
+employee:
+  repository: avinashg0/hr
+  tag: employee-service
+
+employee-service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3001
+
+# -------------------- Department Service -----------------------------
+department:
+  repository: avinashg0/hr
+  tag: department-service
+
+department-service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3002
+
+# -------------------- Leave Service -----------------------------
+leave:
+  repository: avinashg0/hr
+  tag: leave-service
+
+leave-service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3003
+
+# -------------------- Review Service -----------------------------
+review:
+  repository: avinashg0/hr
+  tag: review-service
+
+review-service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3004
+
+# -------------------- Attendance Service -----------------------------
+attendance:
+  repository: avinashg0/hr
+  tag: attendance-service
+
+attendance-service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3005
+
+# -------------------- Payroll Service -----------------------------
+payroll:
+  repository: avinashg0/hr
+  tag: payroll-service
+
+payroll-service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3006
+
+# -------------------- Announcement Service -----------------------------
+announcement:
+  repository: avinashg0/hr
+  tag: announcement-service
+
+announcement-service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3007

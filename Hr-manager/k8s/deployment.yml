@@ -1,0 +1,315 @@
+# ------------------------------ Frontend Service ------------------------------
+# Frontend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: "{{ .Values.frontend.repository }}:{{ .Values.frontend.tag }}"
+          ports:
+            - containerPort: 80
+---
+# Frontend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: frontend
+--- 
+# ------------------------------ API Gateway Service ------------------------------
+# API Gateway Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: "{{ .Values.api-gateway.repository }}:{{ .Values.api-gateway.tag }}"
+          ports:
+            - containerPort: 3000
+--- 
+# API Gateway Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 3000
+  selector:
+    app: api-gateway
+---
+# ------------------------------ Employee Service ------------------------------
+# Employee Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: employee
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: employee
+  template:
+    metadata:
+      labels:
+        app: employee
+    spec:
+      containers:
+        - name: employee
+          image: "{{ .Values.employee.repository }}:{{ .Values.employee.tag }}"
+          ports:
+            - containerPort: 3001
+--- 
+# Employee Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: employee-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 3001
+  selector:
+    app: employee
+---
+# ------------------------------ Department Service ------------------------------
+# Department Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: department
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: department
+  template:
+    metadata:
+      labels:
+        app: department
+    spec:
+      containers:
+        - name: department
+          image: "{{ .Values.department.repository }}:{{ .Values.department.tag }}"
+          ports:
+            - containerPort: 3002
+--- 
+# Department Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: department-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 3002
+  selector:
+    app: department
+--- 
+# ------------------------------ Leave Service ------------------------------
+# Leave Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: leave
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: leave
+  template:
+    metadata:
+      labels:
+        app: leave
+    spec:
+      containers:
+        - name: leave
+          image: "{{ .Values.leave.repository }}:{{ .Values.leave.tag }}"
+          ports:
+            - containerPort: 3003
+---
+# Leave Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: leave-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 3003
+  selector:
+    app: leave
+---
+# ------------------------------ Review Service ------------------------------
+# Review Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: review
+  template:
+    metadata:
+      labels:
+        app: review
+    spec:
+      containers:
+        - name: review
+          image: "{{ .Values.review.repository }}:{{ .Values.review.tag }}"
+          ports:
+            - containerPort: 3004
+
+---
+# Review Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: review-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 3004
+  selector:
+    app: review
+--- 
+# ------------------------------ Attendance Service ------------------------------
+# Attendance Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: attendance
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: attendance
+  template:
+    metadata:
+      labels:
+        app: attendance
+    spec:
+      containers:
+        - name: attendance
+          image: "{{ .Values.attendance.repository }}:{{ .Values.attendance.tag }}"
+          ports:
+            - containerPort: 3005
+--- 
+# Attendance Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: attendance-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 3005
+  selector:
+    app: attendance
+---
+# ------------------------------ Payroll Service ------------------------------
+# Payroll Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payroll
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: payroll
+  template:
+    metadata:
+      labels:
+        app: payroll
+    spec:
+      containers:
+        - name: payroll
+          image: "{{ .Values.payroll.repository }}:{{ .Values.payroll.tag }}"
+          ports:
+            - containerPort: 3006
+--- 
+# Payroll Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: payroll-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 3006
+  selector:
+    app: payroll
+--- 
+# ------------------------------ Announcement Service ------------------------------
+# Announcement Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: announcement
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: announcement
+  template:
+    metadata:
+      labels:
+        app: announcement
+    spec:
+      containers:
+        - name: announcement
+          image: "{{ .Values.announcement.repository }}:{{ .Values.announcement.tag }}"
+          ports:
+            - containerPort: 3007
+--- 
+# Announcement Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: announcement-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 3007
+  selector:
+    app: announcement
